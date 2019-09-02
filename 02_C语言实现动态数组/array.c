@@ -20,24 +20,16 @@ err_t array_create(struct array **_parray, size_t _size, size_t _type_size)
     if(NULL == _parray || 0 == _size || 0 == _type_size )
         return param_err;
     
-    /* Create struct array*/
-    array_new = (struct array *)malloc(sizeof(struct array));
-    if(NULL == array_new)
+    /* Create struct array and data eara*/
+    array_new = (struct array *)malloc(sizeof(struct array) + _size * _type_size);
+    if(NULL == array_new)
         return mem_err;
 
     /* member init */
     array_new->size = _size;
     array_new->cur_len = 0;
     array_new->type_size = _type_size;
-
-    pdata = malloc(_size * _type_size);
-    if(NULL == pdata)
-    {
-        free(array_new);
-        return mem_err;
-    }
-    
-    array_new->data = pdata;
+    array_new->data = array_new + 1;
     array_new->copy = NULL;
     array_new->free = NULL;
     array_new->match = NULL;
@@ -57,14 +49,18 @@ err_t array_insert(struct array *_array, size_t _pos, const void *_value)
     size_t i = 0;
     void *pnew = NULL;
     void *pold = NULL;
-    if(NULL == _array || _pos >= _array->size)
+    if(NULL == _array)
         return param_err;
 
-    /*Detect if there is valid space for new node*/
+    /* Detect if there is valid space for new node */
     if(_array->cur_len == _array->size)
         return mem_full;
-
-    /* move node if need */
+	
+	/* Detect pos if is legal */
+	if(_pos >= _array->size || _pos > _array->size)
+		_pos = _array->cur_len;
+	
+    /* Move node if need */
     for(i = _array->cur_len; i < _pos; i--) {
         pnew = _array->data + i * _array->type_size;
         pold = _array->data + (i - 1) * _array->type_size;
@@ -249,8 +245,6 @@ err_t array_destroy(struct array *_array)
             _array->free(_array->data + i * _array->type_size);
     }
     
-    free(_array->data);
-    _array->data = NULL;
     free(_array);
     _array = NULL;
     
