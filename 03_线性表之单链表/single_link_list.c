@@ -81,6 +81,9 @@ err_t slink_list_delete(slink_list_pt _list, size_t _pos, slink_list_node_pt *_n
     if(NULL == _list || NULL == _node)
         return param_err;
 
+    if(list->size == 0)
+        return success;
+    
     if(_pos > list->size)
         _pos = list->size;
     
@@ -91,7 +94,8 @@ err_t slink_list_delete(slink_list_pt _list, size_t _pos, slink_list_node_pt *_n
     current->next = del_node->next;
     
     list->size--;
-    
+    if(list->size == 0) 
+            list->head.next = NULL;    
     *_node = del_node;
 
     return success;
