@@ -28,20 +28,34 @@ int main(int argc, char **argv)
     ret = slink_list_create(&my_list);
     DEBUG_PRF("slink_list_create ret = %d", ret);
 
-    ret = slink_list_push_back(my_list, (slink_list_node_pt)&t1);
-    DEBUG_PRF("slink_list_push_back ret = %d", ret);
+    ret = slink_list_push_front(my_list, (slink_list_node_pt)&t1);
+    DEBUG_PRF("slink_list_push_front ret = %d", ret);
 
     ret = slink_list_push_front(my_list, (slink_list_node_pt)&t2);
-    DEBUG_PRF("slink_list_push_back ret = %d", ret);
+    DEBUG_PRF("slink_list_push_front ret = %d", ret);
     
-    ret = slink_list_push_back(my_list, (slink_list_node_pt)&t3);
-    DEBUG_PRF("slink_list_push_back ret = %d", ret);
+    ret = slink_list_push_front(my_list, (slink_list_node_pt)&t3);
+    DEBUG_PRF("slink_list_push_front ret = %d", ret);
 
+    ret = slink_list_get_size(my_list);   
+    DEBUG_PRF("slink_list_get_size ret = %d", ret);
+    
     for(i = 0; i < slink_list_get_size(my_list); i++)
     {
-        slink_list_get_node(my_list, i, &tmp);
+        slink_list_get_node(my_list, i, (slink_list_node_pt *)&tmp);
         teacher_dump(tmp);
     }
+
+    while(slink_list_get_size(my_list))
+    {
+        slink_list_pop_back(my_list, (slink_list_node_pt *)&tmp);
+        teacher_dump(tmp);
+    }
+
+    DEBUG_PRF("single link list is %s", slink_list_is_empty(my_list) == true?"empty":"not empty");
+
+    ret = slink_list_destroy(my_list);
+    DEBUG_PRF("slink_list_destroy ret = %d", ret);
     
     return 0;
 }
